@@ -1,0 +1,9 @@
+backend/**/bin/
+backend/**/obj/
+frontend/sixram-hris-web/node_modules/
+frontend/sixram-hris-web/dist/
+backend/Sixram.Hris.Api/App_Data/
+.vs/
+*.user
+*.suo
+Thumbs.db

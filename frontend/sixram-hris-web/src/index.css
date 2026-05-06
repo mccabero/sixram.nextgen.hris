@@ -1,0 +1,357 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "Inter", "Segoe UI", "Aptos", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1d2939;
+  background: #f9fafb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --shell-brand: #465fff;
+  --shell-brand-strong: #3641f5;
+  --shell-brand-soft: rgba(70, 95, 255, 0.08);
+  --shell-surface: #ffffff;
+  --shell-border: #e4e7ec;
+  --shell-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+  --shell-focus-ring: 0 0 0 4px rgba(70, 95, 255, 0.16);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+::selection {
+  background: rgba(70, 95, 255, 0.18);
+  color: #0f172a;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  z-index: -1;
+}
+
+body::-webkit-scrollbar,
+.shell-table-wrap::-webkit-scrollbar,
+.shell-modal-scroll::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body::-webkit-scrollbar-track,
+.shell-table-wrap::-webkit-scrollbar-track,
+.shell-modal-scroll::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb,
+.shell-table-wrap::-webkit-scrollbar-thumb,
+.shell-modal-scroll::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.46);
+  background-clip: padding-box;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Inter", "Segoe UI", "Aptos", sans-serif;
+    letter-spacing: 0;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    @apply transition;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    outline: none;
+    box-shadow: var(--shell-focus-ring);
+  }
+
+  input[type="checkbox"] {
+    accent-color: #465fff;
+  }
+}
+
+@layer components {
+  .shell-card {
+    @apply rounded-2xl border bg-white shadow-sm;
+    border-color: var(--shell-border);
+  }
+
+  .shell-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none placeholder:text-slate-400 focus:border-[#465fff];
+    min-height: 44px;
+  }
+
+  .shell-select {
+    @apply w-full appearance-none rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 pr-10 text-sm text-slate-900 shadow-sm outline-none focus:border-[#465fff];
+    min-height: 44px;
+  }
+
+  .shell-textarea {
+    @apply min-h-28 w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none focus:border-[#465fff];
+  }
+
+  .shell-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-[#465fff] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#3641f5] disabled:cursor-not-allowed disabled:opacity-60;
+    min-height: 44px;
+  }
+
+  .shell-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60;
+    min-height: 44px;
+  }
+
+  .shell-button-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-700 shadow-sm hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60;
+    min-height: 44px;
+  }
+
+  .shell-label {
+    @apply mb-2 block text-sm font-medium text-slate-700;
+  }
+
+  .shell-required::after {
+    content: " *";
+    color: #dc2626;
+  }
+
+  .shell-helper {
+    @apply mt-1 text-xs leading-5 text-slate-500;
+  }
+
+  .shell-badge-brand {
+    @apply inline-flex items-center justify-center rounded-md bg-[#465fff]/10 px-2.5 py-1 text-xs font-semibold text-[#3641f5];
+  }
+
+  .shell-badge-success {
+    @apply inline-flex items-center justify-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700;
+  }
+
+  .shell-badge-danger {
+    @apply inline-flex items-center justify-center rounded-md bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700;
+  }
+
+  .shell-badge-warning {
+    @apply inline-flex items-center justify-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700;
+  }
+
+  .shell-badge-muted {
+    @apply inline-flex items-center justify-center rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600;
+  }
+
+  .shell-kicker {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400;
+  }
+
+  .shell-toolbar {
+    @apply rounded-2xl border bg-white p-4 shadow-sm;
+    border-color: var(--shell-border);
+  }
+
+  .shell-toolbar-grid {
+    @apply grid gap-4;
+  }
+
+  .shell-summary-grid {
+    @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .shell-summary-card {
+    @apply rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm;
+  }
+
+  .shell-summary-card-muted {
+    @apply rounded-xl border border-slate-200 bg-slate-50 px-5 py-4;
+  }
+
+  .shell-state {
+    @apply rounded-xl border px-5 py-4 text-sm;
+  }
+
+  .shell-state-loading {
+    @apply rounded-xl border bg-white text-slate-500 shadow-sm;
+    border-color: var(--shell-border);
+    box-shadow: var(--shell-shadow);
+  }
+
+  .shell-state-error {
+    @apply rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700;
+  }
+
+  .shell-state-empty {
+    @apply rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-500;
+  }
+
+  .shell-form-grid {
+    @apply grid gap-5 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .shell-form-section {
+    @apply rounded-2xl border bg-white p-6 shadow-sm sm:p-7;
+    border-color: var(--shell-border);
+    box-shadow: var(--shell-shadow);
+  }
+
+  .shell-form-actions {
+    @apply flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:justify-end;
+  }
+
+  .shell-detail-row {
+    @apply flex flex-col gap-1 border-b border-slate-100 py-3 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:gap-6;
+  }
+
+  .shell-detail-label {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-slate-400;
+  }
+
+  .shell-detail-value {
+    @apply text-sm font-medium text-slate-900;
+  }
+
+  .shell-table-wrap {
+    @apply overflow-x-auto rounded-2xl border bg-white shadow-sm;
+    border-color: var(--shell-border);
+  }
+
+  .shell-table {
+    @apply min-w-[760px] w-full border-collapse text-left text-sm;
+  }
+
+  .shell-table thead th {
+    @apply border-b border-slate-200 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500;
+  }
+
+  .shell-table tbody tr {
+    @apply border-b border-slate-100 last:border-b-0;
+  }
+
+  .shell-table tbody tr:hover {
+    @apply bg-slate-50/70;
+  }
+
+  .shell-table tbody td {
+    @apply px-5 py-4 align-top;
+  }
+
+  .shell-table-actions {
+    @apply flex flex-wrap gap-2;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+@media (max-width: 1023px) {
+  .shell-toolbar-grid {
+    @apply grid-cols-1;
+  }
+}
+
+@media (max-width: 767px) {
+  .shell-card {
+    @apply rounded-xl;
+  }
+
+  .shell-button,
+  .shell-button-secondary,
+  .shell-button-danger {
+    @apply px-4 py-3.5;
+  }
+
+  .shell-table {
+    min-width: 680px;
+  }
+
+  .shell-table thead th,
+  .shell-table tbody td {
+    @apply px-4;
+  }
+}
+
+@media (max-width: 639px) {
+  body {
+    background: #f9fafb;
+  }
+
+  .shell-card,
+  .shell-toolbar,
+  .shell-table-wrap {
+    @apply rounded-xl;
+  }
+
+  .shell-table {
+    min-width: 620px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .fade-up,
+  .shell-button,
+  .shell-button-secondary,
+  .shell-button-danger {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,1351 @@
+Using launch settings from backend\Sixram.Hris.Api\Properties\launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (36ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Migrations[20411]
+      Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (91ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DECLARE @result int;
+      EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+      SELECT @result
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (18ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+      BEGIN
+          CREATE TABLE [__EFMigrationsHistory] (
+              [MigrationId] nvarchar(150) NOT NULL,
+              [ProductVersion] nvarchar(32) NOT NULL,
+              CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+          );
+      END;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (69ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [MigrationId], [ProductVersion]
+      FROM [__EFMigrationsHistory]
+      ORDER BY [MigrationId];
+info: Microsoft.EntityFrameworkCore.Migrations[20402]
+      Applying migration '20260506110347_AddProvidentFundManagement'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (45ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundPolicies] (
+          [Id] uniqueidentifier NOT NULL,
+          [PolicyName] nvarchar(160) NOT NULL,
+          [Description] nvarchar(1000) NOT NULL,
+          [EligibilityRules] nvarchar(2000) NOT NULL,
+          [EmployeeContributionType] nvarchar(32) NOT NULL,
+          [EmployeeContributionValue] decimal(18,4) NOT NULL,
+          [EmployerContributionType] nvarchar(32) NOT NULL,
+          [EmployerContributionValue] decimal(18,4) NOT NULL,
+          [ContributionFrequency] nvarchar(32) NOT NULL,
+          [EffectiveDate] date NOT NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [AllowVoluntaryContribution] bit NOT NULL,
+          [AllowWithdrawal] bit NOT NULL,
+          [AllowLoan] bit NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedByUserId] nvarchar(450) NULL,
+          [UpdatedByUserId] nvarchar(450) NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundPolicies] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundPolicies_AspNetUsers_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundPolicies_AspNetUsers_UpdatedByUserId] FOREIGN KEY ([UpdatedByUserId]) REFERENCES [AspNetUsers] ([Id])
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (20ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundContributionBatches] (
+          [Id] uniqueidentifier NOT NULL,
+          [BatchNumber] nvarchar(64) NOT NULL,
+          [Month] int NOT NULL,
+          [Year] int NOT NULL,
+          [PolicyId] uniqueidentifier NULL,
+          [IsSupplemental] bit NOT NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [CreatedByUserId] nvarchar(450) NULL,
+          [ReviewedByUserId] nvarchar(450) NULL,
+          [ReviewedAtUtc] datetime2(0) NULL,
+          [PostedByUserId] nvarchar(450) NULL,
+          [PostingDate] datetime2(0) NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundContributionBatches] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundContributionBatches_AspNetUsers_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundContributionBatches_AspNetUsers_PostedByUserId] FOREIGN KEY ([PostedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundContributionBatches_AspNetUsers_ReviewedByUserId] FOREIGN KEY ([ReviewedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundContributionBatches_ProvidentFundPolicies_PolicyId] FOREIGN KEY ([PolicyId]) REFERENCES [ProvidentFundPolicies] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (26ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundEnrollments] (
+          [Id] uniqueidentifier NOT NULL,
+          [EmployeeId] uniqueidentifier NOT NULL,
+          [PolicyId] uniqueidentifier NOT NULL,
+          [EnrollmentDate] date NOT NULL,
+          [VestingStartDate] date NOT NULL,
+          [EmployeeContributionOverrideType] nvarchar(32) NOT NULL,
+          [EmployeeContributionOverrideValue] decimal(18,4) NULL,
+          [EmployerContributionOverrideType] nvarchar(32) NOT NULL,
+          [EmployerContributionOverrideValue] decimal(18,4) NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedByUserId] nvarchar(450) NULL,
+          [UpdatedByUserId] nvarchar(450) NULL,
+          [ClosedAtUtc] datetime2(0) NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundEnrollments] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundEnrollments_AspNetUsers_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundEnrollments_AspNetUsers_UpdatedByUserId] FOREIGN KEY ([UpdatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundEnrollments_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundEnrollments_ProvidentFundPolicies_PolicyId] FOREIGN KEY ([PolicyId]) REFERENCES [ProvidentFundPolicies] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundVestingRules] (
+          [Id] uniqueidentifier NOT NULL,
+          [PolicyId] uniqueidentifier NOT NULL,
+          [YearsOfService] int NOT NULL,
+          [VestedPercentage] decimal(9,4) NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundVestingRules] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundVestingRules_ProvidentFundPolicies_PolicyId] FOREIGN KEY ([PolicyId]) REFERENCES [ProvidentFundPolicies] ([Id]) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundAdjustments] (
+          [Id] uniqueidentifier NOT NULL,
+          [EmployeeId] uniqueidentifier NOT NULL,
+          [EnrollmentId] uniqueidentifier NOT NULL,
+          [AdjustmentType] nvarchar(32) NOT NULL,
+          [AdjustmentDate] date NOT NULL,
+          [Amount] decimal(18,2) NOT NULL,
+          [ShareAffected] nvarchar(32) NOT NULL,
+          [Reason] nvarchar(2000) NOT NULL,
+          [AttachmentPath] nvarchar(512) NOT NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [RequestedByUserId] nvarchar(450) NULL,
+          [ApprovedByUserId] nvarchar(450) NULL,
+          [ApprovedAtUtc] datetime2(0) NULL,
+          [PostedAtUtc] datetime2(0) NULL,
+          [DecisionRemarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundAdjustments] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundAdjustments_AspNetUsers_ApprovedByUserId] FOREIGN KEY ([ApprovedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundAdjustments_AspNetUsers_RequestedByUserId] FOREIGN KEY ([RequestedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundAdjustments_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundAdjustments_ProvidentFundEnrollments_EnrollmentId] FOREIGN KEY ([EnrollmentId]) REFERENCES [ProvidentFundEnrollments] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (12ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundContributionBatchLines] (
+          [Id] uniqueidentifier NOT NULL,
+          [BatchId] uniqueidentifier NOT NULL,
+          [EmployeeId] uniqueidentifier NOT NULL,
+          [EnrollmentId] uniqueidentifier NOT NULL,
+          [BasicSalary] decimal(18,2) NOT NULL,
+          [EmployeeContribution] decimal(18,2) NOT NULL,
+          [EmployerContribution] decimal(18,2) NOT NULL,
+          [VoluntaryContribution] decimal(18,2) NOT NULL,
+          [TotalContribution] decimal(18,2) NOT NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundContributionBatchLines] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundContributionBatchLines_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundContributionBatchLines_ProvidentFundContributionBatches_BatchId] FOREIGN KEY ([BatchId]) REFERENCES [ProvidentFundContributionBatches] ([Id]) ON DELETE CASCADE,
+          CONSTRAINT [FK_ProvidentFundContributionBatchLines_ProvidentFundEnrollments_EnrollmentId] FOREIGN KEY ([EnrollmentId]) REFERENCES [ProvidentFundEnrollments] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundWithdrawalRequests] (
+          [Id] uniqueidentifier NOT NULL,
+          [RequestNumber] nvarchar(64) NOT NULL,
+          [EmployeeId] uniqueidentifier NOT NULL,
+          [EnrollmentId] uniqueidentifier NOT NULL,
+          [RequestDate] date NOT NULL,
+          [WithdrawalType] nvarchar(32) NOT NULL,
+          [RequestedAmount] decimal(18,2) NOT NULL,
+          [EligibleWithdrawableAmount] decimal(18,2) NOT NULL,
+          [ApprovedAmount] decimal(18,2) NOT NULL,
+          [Reason] nvarchar(2000) NOT NULL,
+          [AttachmentPath] nvarchar(512) NOT NULL,
+          [Status] nvarchar(32) NOT NULL,
+          [PaymentDate] datetime2(0) NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedByUserId] nvarchar(450) NULL,
+          [UpdatedByUserId] nvarchar(450) NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [UpdatedAtUtc] datetime2(0) NULL,
+          CONSTRAINT [PK_ProvidentFundWithdrawalRequests] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundWithdrawalRequests_AspNetUsers_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundWithdrawalRequests_AspNetUsers_UpdatedByUserId] FOREIGN KEY ([UpdatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundWithdrawalRequests_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundWithdrawalRequests_ProvidentFundEnrollments_EnrollmentId] FOREIGN KEY ([EnrollmentId]) REFERENCES [ProvidentFundEnrollments] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundAdjustmentApprovals] (
+          [Id] uniqueidentifier NOT NULL,
+          [AdjustmentId] uniqueidentifier NOT NULL,
+          [Action] nvarchar(64) NOT NULL,
+          [ActorUserId] nvarchar(450) NULL,
+          [ActorNameSnapshot] nvarchar(256) NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          CONSTRAINT [PK_ProvidentFundAdjustmentApprovals] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundAdjustmentApprovals_AspNetUsers_ActorUserId] FOREIGN KEY ([ActorUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundAdjustmentApprovals_ProvidentFundAdjustments_AdjustmentId] FOREIGN KEY ([AdjustmentId]) REFERENCES [ProvidentFundAdjustments] ([Id]) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundLedgerTransactions] (
+          [Id] uniqueidentifier NOT NULL,
+          [TransactionNumber] nvarchar(64) NOT NULL,
+          [EmployeeId] uniqueidentifier NOT NULL,
+          [EnrollmentId] uniqueidentifier NOT NULL,
+          [PolicyId] uniqueidentifier NOT NULL,
+          [ContributionBatchId] uniqueidentifier NULL,
+          [ContributionBatchLineId] uniqueidentifier NULL,
+          [TransactionDate] date NOT NULL,
+          [TransactionType] nvarchar(64) NOT NULL,
+          [SourceType] nvarchar(64) NOT NULL,
+          [SourceReferenceId] nvarchar(128) NOT NULL,
+          [EmployeeShareAmount] decimal(18,2) NOT NULL,
+          [EmployerShareAmount] decimal(18,2) NOT NULL,
+          [VoluntaryShareAmount] decimal(18,2) NOT NULL,
+          [InterestAmount] decimal(18,2) NOT NULL,
+          [DebitAmount] decimal(18,2) NOT NULL,
+          [CreditAmount] decimal(18,2) NOT NULL,
+          [RunningBalance] decimal(18,2) NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedByUserId] nvarchar(450) NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          [IsReversed] bit NOT NULL,
+          [ReversalReferenceId] uniqueidentifier NULL,
+          CONSTRAINT [PK_ProvidentFundLedgerTransactions] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_AspNetUsers_CreatedByUserId] FOREIGN KEY ([CreatedByUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_Employees_EmployeeId] FOREIGN KEY ([EmployeeId]) REFERENCES [Employees] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_ProvidentFundContributionBatchLines_ContributionBatchLineId] FOREIGN KEY ([ContributionBatchLineId]) REFERENCES [ProvidentFundContributionBatchLines] ([Id]),
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_ProvidentFundContributionBatches_ContributionBatchId] FOREIGN KEY ([ContributionBatchId]) REFERENCES [ProvidentFundContributionBatches] ([Id]),
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_ProvidentFundEnrollments_EnrollmentId] FOREIGN KEY ([EnrollmentId]) REFERENCES [ProvidentFundEnrollments] ([Id]) ON DELETE NO ACTION,
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_ProvidentFundLedgerTransactions_ReversalReferenceId] FOREIGN KEY ([ReversalReferenceId]) REFERENCES [ProvidentFundLedgerTransactions] ([Id]),
+          CONSTRAINT [FK_ProvidentFundLedgerTransactions_ProvidentFundPolicies_PolicyId] FOREIGN KEY ([PolicyId]) REFERENCES [ProvidentFundPolicies] ([Id]) ON DELETE NO ACTION
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE [ProvidentFundWithdrawalApprovals] (
+          [Id] uniqueidentifier NOT NULL,
+          [WithdrawalRequestId] uniqueidentifier NOT NULL,
+          [StepName] nvarchar(64) NOT NULL,
+          [Action] nvarchar(64) NOT NULL,
+          [ActorUserId] nvarchar(450) NULL,
+          [ActorNameSnapshot] nvarchar(256) NOT NULL,
+          [Remarks] nvarchar(1000) NOT NULL,
+          [CreatedAtUtc] datetime2(0) NOT NULL,
+          CONSTRAINT [PK_ProvidentFundWithdrawalApprovals] PRIMARY KEY ([Id]),
+          CONSTRAINT [FK_ProvidentFundWithdrawalApprovals_AspNetUsers_ActorUserId] FOREIGN KEY ([ActorUserId]) REFERENCES [AspNetUsers] ([Id]),
+          CONSTRAINT [FK_ProvidentFundWithdrawalApprovals_ProvidentFundWithdrawalRequests_WithdrawalRequestId] FOREIGN KEY ([WithdrawalRequestId]) REFERENCES [ProvidentFundWithdrawalRequests] ([Id]) ON DELETE CASCADE
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustmentApprovals_ActorUserId] ON [ProvidentFundAdjustmentApprovals] ([ActorUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustmentApprovals_AdjustmentId] ON [ProvidentFundAdjustmentApprovals] ([AdjustmentId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_AdjustmentDate] ON [ProvidentFundAdjustments] ([AdjustmentDate]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_ApprovedByUserId] ON [ProvidentFundAdjustments] ([ApprovedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_EmployeeId] ON [ProvidentFundAdjustments] ([EmployeeId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_EnrollmentId] ON [ProvidentFundAdjustments] ([EnrollmentId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_RequestedByUserId] ON [ProvidentFundAdjustments] ([RequestedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_ShareAffected] ON [ProvidentFundAdjustments] ([ShareAffected]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundAdjustments_Status] ON [ProvidentFundAdjustments] ([Status]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundContributionBatches_BatchNumber] ON [ProvidentFundContributionBatches] ([BatchNumber]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_CreatedByUserId] ON [ProvidentFundContributionBatches] ([CreatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_PolicyId] ON [ProvidentFundContributionBatches] ([PolicyId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_PostedByUserId] ON [ProvidentFundContributionBatches] ([PostedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_ReviewedByUserId] ON [ProvidentFundContributionBatches] ([ReviewedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_Status] ON [ProvidentFundContributionBatches] ([Status]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatches_Year_Month_PolicyId] ON [ProvidentFundContributionBatches] ([Year], [Month], [PolicyId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatchLines_BatchId] ON [ProvidentFundContributionBatchLines] ([BatchId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatchLines_EmployeeId] ON [ProvidentFundContributionBatchLines] ([EmployeeId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundContributionBatchLines_EnrollmentId] ON [ProvidentFundContributionBatchLines] ([EnrollmentId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundEnrollments_CreatedByUserId] ON [ProvidentFundEnrollments] ([CreatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundEnrollments_EmployeeId] ON [ProvidentFundEnrollments] ([EmployeeId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundEnrollments_EmployeeId_Status] ON [ProvidentFundEnrollments] ([EmployeeId], [Status]) WHERE [Status] = 'active';
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundEnrollments_PolicyId] ON [ProvidentFundEnrollments] ([PolicyId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundEnrollments_Status] ON [ProvidentFundEnrollments] ([Status]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundEnrollments_UpdatedByUserId] ON [ProvidentFundEnrollments] ([UpdatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_ContributionBatchId] ON [ProvidentFundLedgerTransactions] ([ContributionBatchId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_ContributionBatchLineId] ON [ProvidentFundLedgerTransactions] ([ContributionBatchLineId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_CreatedByUserId] ON [ProvidentFundLedgerTransactions] ([CreatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_EmployeeId] ON [ProvidentFundLedgerTransactions] ([EmployeeId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_EnrollmentId] ON [ProvidentFundLedgerTransactions] ([EnrollmentId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_PolicyId] ON [ProvidentFundLedgerTransactions] ([PolicyId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_ReversalReferenceId] ON [ProvidentFundLedgerTransactions] ([ReversalReferenceId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_SourceType_SourceReferenceId] ON [ProvidentFundLedgerTransactions] ([SourceType], [SourceReferenceId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_TransactionDate] ON [ProvidentFundLedgerTransactions] ([TransactionDate]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundLedgerTransactions_TransactionNumber] ON [ProvidentFundLedgerTransactions] ([TransactionNumber]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundLedgerTransactions_TransactionType] ON [ProvidentFundLedgerTransactions] ([TransactionType]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundPolicies_CreatedByUserId] ON [ProvidentFundPolicies] ([CreatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundPolicies_PolicyName] ON [ProvidentFundPolicies] ([PolicyName]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundPolicies_Status] ON [ProvidentFundPolicies] ([Status]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundPolicies_UpdatedByUserId] ON [ProvidentFundPolicies] ([UpdatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundVestingRules_PolicyId_YearsOfService] ON [ProvidentFundVestingRules] ([PolicyId], [YearsOfService]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalApprovals_ActorUserId] ON [ProvidentFundWithdrawalApprovals] ([ActorUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalApprovals_WithdrawalRequestId] ON [ProvidentFundWithdrawalApprovals] ([WithdrawalRequestId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_CreatedByUserId] ON [ProvidentFundWithdrawalRequests] ([CreatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_EmployeeId] ON [ProvidentFundWithdrawalRequests] ([EmployeeId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_EnrollmentId] ON [ProvidentFundWithdrawalRequests] ([EnrollmentId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_RequestDate] ON [ProvidentFundWithdrawalRequests] ([RequestDate]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE UNIQUE INDEX [IX_ProvidentFundWithdrawalRequests_RequestNumber] ON [ProvidentFundWithdrawalRequests] ([RequestNumber]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_Status] ON [ProvidentFundWithdrawalRequests] ([Status]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_UpdatedByUserId] ON [ProvidentFundWithdrawalRequests] ([UpdatedByUserId]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE INDEX [IX_ProvidentFundWithdrawalRequests_WithdrawalType] ON [ProvidentFundWithdrawalRequests] ([WithdrawalType]);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (21ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+      VALUES (N'20260506110347_AddProvidentFundManagement', N'9.0.15');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (17ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      DECLARE @result int;
+      EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+      SELECT @result
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (52ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (31ms) [Parameters=[@p6='?' (Size = 450), @p0='?' (Size = 4000), @p7='?' (Size = 4000), @p1='?' (DbType = DateTime2), @p2='?' (Size = 256), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetRoles] SET [ConcurrencyStamp] = @p0, [CreatedAtUtc] = @p1, [Description] = @p2, [Name] = @p3, [NormalizedName] = @p4, [UpdatedAtUtc] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6 AND [ConcurrencyStamp] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p6='?' (Size = 450), @p0='?' (Size = 4000), @p7='?' (Size = 4000), @p1='?' (DbType = DateTime2), @p2='?' (Size = 256), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetRoles] SET [ConcurrencyStamp] = @p0, [CreatedAtUtc] = @p1, [Description] = @p2, [Name] = @p3, [NormalizedName] = @p4, [UpdatedAtUtc] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6 AND [ConcurrencyStamp] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p6='?' (Size = 450), @p0='?' (Size = 4000), @p7='?' (Size = 4000), @p1='?' (DbType = DateTime2), @p2='?' (Size = 256), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetRoles] SET [ConcurrencyStamp] = @p0, [CreatedAtUtc] = @p1, [Description] = @p2, [Name] = @p3, [NormalizedName] = @p4, [UpdatedAtUtc] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6 AND [ConcurrencyStamp] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p6='?' (Size = 450), @p0='?' (Size = 4000), @p7='?' (Size = 4000), @p1='?' (DbType = DateTime2), @p2='?' (Size = 256), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetRoles] SET [ConcurrencyStamp] = @p0, [CreatedAtUtc] = @p1, [Description] = @p2, [Name] = @p3, [NormalizedName] = @p4, [UpdatedAtUtc] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6 AND [ConcurrencyStamp] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p6='?' (Size = 450), @p0='?' (Size = 4000), @p7='?' (Size = 4000), @p1='?' (DbType = DateTime2), @p2='?' (Size = 256), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetRoles] SET [ConcurrencyStamp] = @p0, [CreatedAtUtc] = @p1, [Description] = @p2, [Name] = @p3, [NormalizedName] = @p4, [UpdatedAtUtc] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6 AND [ConcurrencyStamp] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[IsEnabled], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAtUtc], [a].[UserName]
+      FROM [AspNetUsers] AS [a]
+      WHERE [a].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (45ms) [Parameters=[@__normalizedUserName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[IsEnabled], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAtUtc], [a].[UserName]
+      FROM [AspNetUsers] AS [a]
+      WHERE [a].[NormalizedUserName] = @__normalizedUserName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[DisplayName], [a].[Email], [a].[EmailConfirmed], [a].[IsEnabled], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UpdatedAtUtc], [a].[UserName]
+      FROM [AspNetUsers] AS [a]
+      WHERE [a].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (20ms) [Parameters=[@p18='?' (Size = 450), @p0='?' (DbType = Int32), @p1='?' (Size = 4000), @p19='?' (Size = 4000), @p2='?' (DbType = DateTime2), @p3='?' (Size = 256), @p4='?' (Size = 256), @p5='?' (DbType = Boolean), @p6='?' (DbType = Boolean), @p7='?' (DbType = Boolean), @p8='?' (DbType = DateTimeOffset), @p9='?' (Size = 256), @p10='?' (Size = 256), @p11='?' (Size = 4000), @p12='?' (Size = 4000), @p13='?' (DbType = Boolean), @p14='?' (Size = 4000), @p15='?' (DbType = Boolean), @p16='?' (DbType = DateTime2), @p17='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [AspNetUsers] SET [AccessFailedCount] = @p0, [ConcurrencyStamp] = @p1, [CreatedAtUtc] = @p2, [DisplayName] = @p3, [Email] = @p4, [EmailConfirmed] = @p5, [IsEnabled] = @p6, [LockoutEnabled] = @p7, [LockoutEnd] = @p8, [NormalizedEmail] = @p9, [NormalizedUserName] = @p10, [PasswordHash] = @p11, [PhoneNumber] = @p12, [PhoneNumberConfirmed] = @p13, [SecurityStamp] = @p14, [TwoFactorEnabled] = @p15, [UpdatedAtUtc] = @p16, [UserName] = @p17
+      OUTPUT 1
+      WHERE [Id] = @p18 AND [ConcurrencyStamp] = @p19;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__normalizedRoleName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedRoleName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@__p_0='?' (Size = 450), @__p_1='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[UserId], [a].[RoleId]
+      FROM [AspNetUserRoles] AS [a]
+      WHERE [a].[UserId] = @__p_0 AND [a].[RoleId] = @__p_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedRoleName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[CreatedAtUtc], [a].[Description], [a].[Name], [a].[NormalizedName], [a].[UpdatedAtUtc]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedRoleName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__p_0='?' (Size = 450), @__p_1='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[UserId], [a].[RoleId]
+      FROM [AspNetUserRoles] AS [a]
+      WHERE [a].[UserId] = @__p_0 AND [a].[RoleId] = @__p_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (18ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[UpdatedAtUtc]
+      FROM [Departments] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[UpdatedAtUtc]
+      FROM [Departments] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[UpdatedAtUtc]
+      FROM [Departments] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[UpdatedAtUtc]
+      FROM [Departments] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (16ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [Departments] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [Departments] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [Departments] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [Departments] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[UpdatedAtUtc]
+      FROM [Departments] AS [d]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[DepartmentId], [p].[Description], [p].[IsActive], [p].[Name], [p].[UpdatedAtUtc]
+      FROM [Positions] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[DepartmentId], [p].[Description], [p].[IsActive], [p].[Name], [p].[UpdatedAtUtc]
+      FROM [Positions] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[DepartmentId], [p].[Description], [p].[IsActive], [p].[Name], [p].[UpdatedAtUtc]
+      FROM [Positions] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[DepartmentId], [p].[Description], [p].[IsActive], [p].[Name], [p].[UpdatedAtUtc]
+      FROM [Positions] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (17ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [Positions] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [Positions] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [Positions] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [Positions] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [b].[Id], [b].[Address], [b].[Code], [b].[CreatedAtUtc], [b].[Description], [b].[IsActive], [b].[Name], [b].[UpdatedAtUtc]
+      FROM [Branches] AS [b]
+      WHERE [b].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [b].[Id], [b].[Address], [b].[Code], [b].[CreatedAtUtc], [b].[Description], [b].[IsActive], [b].[Name], [b].[UpdatedAtUtc]
+      FROM [Branches] AS [b]
+      WHERE [b].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [b].[Id], [b].[Address], [b].[Code], [b].[CreatedAtUtc], [b].[Description], [b].[IsActive], [b].[Name], [b].[UpdatedAtUtc]
+      FROM [Branches] AS [b]
+      WHERE [b].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (12ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [Branches] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [Branches] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [Branches] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [EmploymentTypes] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [EmploymentTypes] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [EmploymentTypes] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentStatuses] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentStatuses] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentStatuses] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentStatuses] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[UpdatedAtUtc]
+      FROM [EmploymentStatuses] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Guid), @p8='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [EmploymentStatuses] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [EmploymentStatuses] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [EmploymentStatuses] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [EmploymentStatuses] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [EmploymentStatuses] SET [UpdatedAtUtc] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[IsRequired], [d].[Name], [d].[RequiresExpiryDate], [d].[UpdatedAtUtc]
+      FROM [DocumentTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (29ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Guid), @p8='?' (DbType = DateTime2), @p11='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p13='?' (DbType = Guid), @p12='?' (DbType = DateTime2), @p15='?' (DbType = Guid), @p14='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p10
+      OUTPUT 1
+      WHERE [Id] = @p11;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p12
+      OUTPUT 1
+      WHERE [Id] = @p13;
+      UPDATE [DocumentTypes] SET [UpdatedAtUtc] = @p14
+      OUTPUT 1
+      WHERE [Id] = @p15;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [w].[Id], [w].[BreakDurationMinutes], [w].[Code], [w].[CreatedAtUtc], [w].[Description], [w].[GracePeriodMinutes], [w].[IsActive], [w].[Name], [w].[RequiredWorkingMinutes], [w].[ScheduleType], [w].[UpdatedAtUtc]
+      FROM [WorkSchedules] AS [w]
+      WHERE [w].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [w].[Id], [w].[BreakDurationMinutes], [w].[Code], [w].[CreatedAtUtc], [w].[Description], [w].[GracePeriodMinutes], [w].[IsActive], [w].[Name], [w].[RequiredWorkingMinutes], [w].[ScheduleType], [w].[UpdatedAtUtc]
+      FROM [WorkSchedules] AS [w]
+      WHERE [w].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [w].[Id], [w].[BreakDurationMinutes], [w].[Code], [w].[CreatedAtUtc], [w].[Description], [w].[GracePeriodMinutes], [w].[IsActive], [w].[Name], [w].[RequiredWorkingMinutes], [w].[ScheduleType], [w].[UpdatedAtUtc]
+      FROM [WorkSchedules] AS [w]
+      WHERE [w].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [WorkSchedules] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [WorkSchedules] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [WorkSchedules] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [s].[Id], [s].[BreakEndTime], [s].[BreakStartTime], [s].[Code], [s].[CreatedAtUtc], [s].[EndTime], [s].[GracePeriodMinutes], [s].[IsActive], [s].[IsOvernight], [s].[Name], [s].[RequiredWorkingMinutes], [s].[StartTime], [s].[UpdatedAtUtc]
+      FROM [Shifts] AS [s]
+      WHERE [s].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [s].[Id], [s].[BreakEndTime], [s].[BreakStartTime], [s].[Code], [s].[CreatedAtUtc], [s].[EndTime], [s].[GracePeriodMinutes], [s].[IsActive], [s].[IsOvernight], [s].[Name], [s].[RequiredWorkingMinutes], [s].[StartTime], [s].[UpdatedAtUtc]
+      FROM [Shifts] AS [s]
+      WHERE [s].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [s].[Id], [s].[BreakEndTime], [s].[BreakStartTime], [s].[Code], [s].[CreatedAtUtc], [s].[EndTime], [s].[GracePeriodMinutes], [s].[IsActive], [s].[IsOvernight], [s].[Name], [s].[RequiredWorkingMinutes], [s].[StartTime], [s].[UpdatedAtUtc]
+      FROM [Shifts] AS [s]
+      WHERE [s].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (12ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [Shifts] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [Shifts] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [Shifts] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [l].[Id], [l].[AllowDuringProbationaryPeriod], [l].[AllowHalfDay], [l].[AllowNegativeBalance], [l].[Code], [l].[CountsHolidays], [l].[CountsRestDays], [l].[CreatedAtUtc], [l].[DefaultAnnualCredits], [l].[Description], [l].[EmploymentTypeRestrictions], [l].[GenderRestriction], [l].[IsActive], [l].[IsPaid], [l].[MaxDaysPerRequest], [l].[MinDaysBeforeFiling], [l].[Name], [l].[RequiresAttachment], [l].[RequiresReason], [l].[UpdatedAtUtc]
+      FROM [LeaveTypes] AS [l]
+      WHERE [l].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (39ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Guid), @p8='?' (DbType = DateTime2), @p11='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p13='?' (DbType = Guid), @p12='?' (DbType = DateTime2), @p15='?' (DbType = Guid), @p14='?' (DbType = DateTime2), @p17='?' (DbType = Guid), @p16='?' (DbType = DateTime2), @p19='?' (DbType = Guid), @p18='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p10
+      OUTPUT 1
+      WHERE [Id] = @p11;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p12
+      OUTPUT 1
+      WHERE [Id] = @p13;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p14
+      OUTPUT 1
+      WHERE [Id] = @p15;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p16
+      OUTPUT 1
+      WHERE [Id] = @p17;
+      UPDATE [LeaveTypes] SET [UpdatedAtUtc] = @p18
+      OUTPUT 1
+      WHERE [Id] = @p19;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__key_0='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[CreatedAtUtc], [p].[Description], [p].[Key], [p].[UpdatedAtUtc], [p].[Value]
+      FROM [PayrollSettings] AS [p]
+      WHERE [p].[Key] = @__key_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[Description], [p].[IsActive], [p].[Name], [p].[PayFrequency], [p].[PayrollOffsetDays], [p].[PeriodLengthDays], [p].[UpdatedAtUtc]
+      FROM [PayPeriodTemplates] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[Description], [p].[IsActive], [p].[Name], [p].[PayFrequency], [p].[PayrollOffsetDays], [p].[PeriodLengthDays], [p].[UpdatedAtUtc]
+      FROM [PayPeriodTemplates] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [p].[Id], [p].[Code], [p].[CreatedAtUtc], [p].[Description], [p].[IsActive], [p].[Name], [p].[PayFrequency], [p].[PayrollOffsetDays], [p].[PeriodLengthDays], [p].[UpdatedAtUtc]
+      FROM [PayPeriodTemplates] AS [p]
+      WHERE [p].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [e].[Id], [e].[AffectsThirteenthMonth], [e].[Category], [e].[Code], [e].[CreatedAtUtc], [e].[Description], [e].[IsActive], [e].[Name], [e].[Recurring], [e].[Taxable], [e].[UpdatedAtUtc]
+      FROM [EarningTypes] AS [e]
+      WHERE [e].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [d].[Id], [d].[Category], [d].[Code], [d].[CreatedAtUtc], [d].[Description], [d].[IsActive], [d].[Name], [d].[PreTax], [d].[Recurring], [d].[UpdatedAtUtc]
+      FROM [DeductionTypes] AS [d]
+      WHERE [d].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [c].[Id], [c].[Code], [c].[CreatedAtUtc], [c].[Description], [c].[EmployeeShareApplicable], [c].[EmployerShareApplicable], [c].[IsActive], [c].[Name], [c].[UpdatedAtUtc]
+      FROM [ContributionTypes] AS [c]
+      WHERE [c].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [c].[Id], [c].[Code], [c].[CreatedAtUtc], [c].[Description], [c].[EmployeeShareApplicable], [c].[EmployerShareApplicable], [c].[IsActive], [c].[Name], [c].[UpdatedAtUtc]
+      FROM [ContributionTypes] AS [c]
+      WHERE [c].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [c].[Id], [c].[Code], [c].[CreatedAtUtc], [c].[Description], [c].[EmployeeShareApplicable], [c].[EmployerShareApplicable], [c].[IsActive], [c].[Name], [c].[UpdatedAtUtc]
+      FROM [ContributionTypes] AS [c]
+      WHERE [c].[Code] = @__seed_Code_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (120ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Guid), @p8='?' (DbType = DateTime2), @p11='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p13='?' (DbType = Guid), @p12='?' (DbType = DateTime2), @p15='?' (DbType = Guid), @p14='?' (DbType = DateTime2), @p17='?' (DbType = Guid), @p16='?' (DbType = DateTime2), @p19='?' (DbType = Guid), @p18='?' (DbType = DateTime2), @p21='?' (DbType = Guid), @p20='?' (DbType = DateTime2), @p23='?' (DbType = Guid), @p22='?' (DbType = DateTime2), @p25='?' (DbType = Guid), @p24='?' (DbType = DateTime2), @p27='?' (DbType = Guid), @p26='?' (DbType = DateTime2), @p29='?' (DbType = Guid), @p28='?' (DbType = DateTime2), @p31='?' (DbType = Guid), @p30='?' (DbType = DateTime2), @p33='?' (DbType = Guid), @p32='?' (DbType = DateTime2), @p35='?' (DbType = Guid), @p34='?' (DbType = DateTime2), @p37='?' (DbType = Guid), @p36='?' (DbType = DateTime2), @p39='?' (DbType = Guid), @p38='?' (DbType = DateTime2), @p41='?' (DbType = Guid), @p40='?' (DbType = DateTime2), @p43='?' (DbType = Guid), @p42='?' (DbType = DateTime2), @p45='?' (DbType = Guid), @p44='?' (DbType = DateTime2), @p47='?' (DbType = Guid), @p46='?' (DbType = DateTime2), @p49='?' (DbType = Guid), @p48='?' (DbType = DateTime2), @p51='?' (DbType = Guid), @p50='?' (DbType = DateTime2), @p53='?' (DbType = Guid), @p52='?' (DbType = DateTime2), @p55='?' (DbType = Guid), @p54='?' (DbType = DateTime2), @p57='?' (DbType = Guid), @p56='?' (DbType = DateTime2), @p59='?' (DbType = Guid), @p58='?' (DbType = DateTime2), @p61='?' (DbType = Guid), @p60='?' (DbType = DateTime2), @p63='?' (DbType = Guid), @p62='?' (DbType = DateTime2), @p65='?' (DbType = Guid), @p64='?' (DbType = DateTime2), @p67='?' (DbType = Guid), @p66='?' (DbType = DateTime2), @p69='?' (DbType = Guid), @p68='?' (DbType = DateTime2), @p71='?' (DbType = Guid), @p70='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [ContributionTypes] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [ContributionTypes] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [ContributionTypes] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p10
+      OUTPUT 1
+      WHERE [Id] = @p11;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p12
+      OUTPUT 1
+      WHERE [Id] = @p13;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p14
+      OUTPUT 1
+      WHERE [Id] = @p15;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p16
+      OUTPUT 1
+      WHERE [Id] = @p17;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p18
+      OUTPUT 1
+      WHERE [Id] = @p19;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p20
+      OUTPUT 1
+      WHERE [Id] = @p21;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p22
+      OUTPUT 1
+      WHERE [Id] = @p23;
+      UPDATE [DeductionTypes] SET [UpdatedAtUtc] = @p24
+      OUTPUT 1
+      WHERE [Id] = @p25;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p26
+      OUTPUT 1
+      WHERE [Id] = @p27;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p28
+      OUTPUT 1
+      WHERE [Id] = @p29;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p30
+      OUTPUT 1
+      WHERE [Id] = @p31;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p32
+      OUTPUT 1
+      WHERE [Id] = @p33;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p34
+      OUTPUT 1
+      WHERE [Id] = @p35;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p36
+      OUTPUT 1
+      WHERE [Id] = @p37;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p38
+      OUTPUT 1
+      WHERE [Id] = @p39;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p40
+      OUTPUT 1
+      WHERE [Id] = @p41;
+      UPDATE [EarningTypes] SET [UpdatedAtUtc] = @p42
+      OUTPUT 1
+      WHERE [Id] = @p43;
+      UPDATE [PayPeriodTemplates] SET [UpdatedAtUtc] = @p44
+      OUTPUT 1
+      WHERE [Id] = @p45;
+      UPDATE [PayPeriodTemplates] SET [UpdatedAtUtc] = @p46
+      OUTPUT 1
+      WHERE [Id] = @p47;
+      UPDATE [PayPeriodTemplates] SET [UpdatedAtUtc] = @p48
+      OUTPUT 1
+      WHERE [Id] = @p49;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p50
+      OUTPUT 1
+      WHERE [Id] = @p51;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p52
+      OUTPUT 1
+      WHERE [Id] = @p53;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p54
+      OUTPUT 1
+      WHERE [Id] = @p55;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p56
+      OUTPUT 1
+      WHERE [Id] = @p57;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p58
+      OUTPUT 1
+      WHERE [Id] = @p59;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p60
+      OUTPUT 1
+      WHERE [Id] = @p61;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p62
+      OUTPUT 1
+      WHERE [Id] = @p63;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p64
+      OUTPUT 1
+      WHERE [Id] = @p65;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p66
+      OUTPUT 1
+      WHERE [Id] = @p67;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p68
+      OUTPUT 1
+      WHERE [Id] = @p69;
+      UPDATE [PayrollSettings] SET [UpdatedAtUtc] = @p70
+      OUTPUT 1
+      WHERE [Id] = @p71;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[Code], [c].[CreatedAtUtc], [c].[Description], [c].[EmployeeShareApplicable], [c].[EmployerShareApplicable], [c].[IsActive], [c].[Name], [c].[UpdatedAtUtc]
+      FROM [ContributionTypes] AS [c]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (26ms) [Parameters=[@__seed_ContributionTypeId_0='?' (DbType = Guid), @__seed_Name_1='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT [g1].[Id], [g1].[ContributionTypeId], [g1].[CreatedAtUtc], [g1].[EffectiveEndDate], [g1].[EffectiveStartDate], [g1].[IsActive], [g1].[Name], [g1].[UpdatedAtUtc], [g0].[Id], [g0].[CreatedAtUtc], [g0].[EmployeeShareAmount], [g0].[EmployeeShareRate], [g0].[EmployerShareAmount], [g0].[EmployerShareRate], [g0].[GovernmentContributionTableId], [g0].[MaxCompensation], [g0].[MinCompensation], [g0].[Remarks], [g0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [g].[Id], [g].[ContributionTypeId], [g].[CreatedAtUtc], [g].[EffectiveEndDate], [g].[EffectiveStartDate], [g].[IsActive], [g].[Name], [g].[UpdatedAtUtc]
+          FROM [GovernmentContributionTables] AS [g]
+          WHERE [g].[ContributionTypeId] = @__seed_ContributionTypeId_0 AND [g].[Name] = @__seed_Name_1
+      ) AS [g1]
+      LEFT JOIN [GovernmentContributionBrackets] AS [g0] ON [g1].[Id] = [g0].[GovernmentContributionTableId]
+      ORDER BY [g1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_ContributionTypeId_0='?' (DbType = Guid), @__seed_Name_1='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT [g1].[Id], [g1].[ContributionTypeId], [g1].[CreatedAtUtc], [g1].[EffectiveEndDate], [g1].[EffectiveStartDate], [g1].[IsActive], [g1].[Name], [g1].[UpdatedAtUtc], [g0].[Id], [g0].[CreatedAtUtc], [g0].[EmployeeShareAmount], [g0].[EmployeeShareRate], [g0].[EmployerShareAmount], [g0].[EmployerShareRate], [g0].[GovernmentContributionTableId], [g0].[MaxCompensation], [g0].[MinCompensation], [g0].[Remarks], [g0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [g].[Id], [g].[ContributionTypeId], [g].[CreatedAtUtc], [g].[EffectiveEndDate], [g].[EffectiveStartDate], [g].[IsActive], [g].[Name], [g].[UpdatedAtUtc]
+          FROM [GovernmentContributionTables] AS [g]
+          WHERE [g].[ContributionTypeId] = @__seed_ContributionTypeId_0 AND [g].[Name] = @__seed_Name_1
+      ) AS [g1]
+      LEFT JOIN [GovernmentContributionBrackets] AS [g0] ON [g1].[Id] = [g0].[GovernmentContributionTableId]
+      ORDER BY [g1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_ContributionTypeId_0='?' (DbType = Guid), @__seed_Name_1='?' (Size = 128)], CommandType='Text', CommandTimeout='30']
+      SELECT [g1].[Id], [g1].[ContributionTypeId], [g1].[CreatedAtUtc], [g1].[EffectiveEndDate], [g1].[EffectiveStartDate], [g1].[IsActive], [g1].[Name], [g1].[UpdatedAtUtc], [g0].[Id], [g0].[CreatedAtUtc], [g0].[EmployeeShareAmount], [g0].[EmployeeShareRate], [g0].[EmployerShareAmount], [g0].[EmployerShareRate], [g0].[GovernmentContributionTableId], [g0].[MaxCompensation], [g0].[MinCompensation], [g0].[Remarks], [g0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [g].[Id], [g].[ContributionTypeId], [g].[CreatedAtUtc], [g].[EffectiveEndDate], [g].[EffectiveStartDate], [g].[IsActive], [g].[Name], [g].[UpdatedAtUtc]
+          FROM [GovernmentContributionTables] AS [g]
+          WHERE [g].[ContributionTypeId] = @__seed_ContributionTypeId_0 AND [g].[Name] = @__seed_Name_1
+      ) AS [g1]
+      LEFT JOIN [GovernmentContributionBrackets] AS [g0] ON [g1].[Id] = [g0].[GovernmentContributionTableId]
+      ORDER BY [g1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Code], [t1].[CreatedAtUtc], [t1].[EffectiveEndDate], [t1].[EffectiveStartDate], [t1].[IsActive], [t1].[Name], [t1].[PayFrequency], [t1].[UpdatedAtUtc], [t0].[Id], [t0].[BaseTax], [t0].[CreatedAtUtc], [t0].[ExcessOver], [t0].[MaxTaxableIncome], [t0].[MinTaxableIncome], [t0].[TaxRate], [t0].[TaxTableId], [t0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [t].[Id], [t].[Code], [t].[CreatedAtUtc], [t].[EffectiveEndDate], [t].[EffectiveStartDate], [t].[IsActive], [t].[Name], [t].[PayFrequency], [t].[UpdatedAtUtc]
+          FROM [TaxTables] AS [t]
+          WHERE [t].[Code] = @__seed_Code_0
+      ) AS [t1]
+      LEFT JOIN [TaxBrackets] AS [t0] ON [t1].[Id] = [t0].[TaxTableId]
+      ORDER BY [t1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Code], [t1].[CreatedAtUtc], [t1].[EffectiveEndDate], [t1].[EffectiveStartDate], [t1].[IsActive], [t1].[Name], [t1].[PayFrequency], [t1].[UpdatedAtUtc], [t0].[Id], [t0].[BaseTax], [t0].[CreatedAtUtc], [t0].[ExcessOver], [t0].[MaxTaxableIncome], [t0].[MinTaxableIncome], [t0].[TaxRate], [t0].[TaxTableId], [t0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [t].[Id], [t].[Code], [t].[CreatedAtUtc], [t].[EffectiveEndDate], [t].[EffectiveStartDate], [t].[IsActive], [t].[Name], [t].[PayFrequency], [t].[UpdatedAtUtc]
+          FROM [TaxTables] AS [t]
+          WHERE [t].[Code] = @__seed_Code_0
+      ) AS [t1]
+      LEFT JOIN [TaxBrackets] AS [t0] ON [t1].[Id] = [t0].[TaxTableId]
+      ORDER BY [t1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Code], [t1].[CreatedAtUtc], [t1].[EffectiveEndDate], [t1].[EffectiveStartDate], [t1].[IsActive], [t1].[Name], [t1].[PayFrequency], [t1].[UpdatedAtUtc], [t0].[Id], [t0].[BaseTax], [t0].[CreatedAtUtc], [t0].[ExcessOver], [t0].[MaxTaxableIncome], [t0].[MinTaxableIncome], [t0].[TaxRate], [t0].[TaxTableId], [t0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [t].[Id], [t].[Code], [t].[CreatedAtUtc], [t].[EffectiveEndDate], [t].[EffectiveStartDate], [t].[IsActive], [t].[Name], [t].[PayFrequency], [t].[UpdatedAtUtc]
+          FROM [TaxTables] AS [t]
+          WHERE [t].[Code] = @__seed_Code_0
+      ) AS [t1]
+      LEFT JOIN [TaxBrackets] AS [t0] ON [t1].[Id] = [t0].[TaxTableId]
+      ORDER BY [t1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__seed_Code_0='?' (Size = 32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Code], [t1].[CreatedAtUtc], [t1].[EffectiveEndDate], [t1].[EffectiveStartDate], [t1].[IsActive], [t1].[Name], [t1].[PayFrequency], [t1].[UpdatedAtUtc], [t0].[Id], [t0].[BaseTax], [t0].[CreatedAtUtc], [t0].[ExcessOver], [t0].[MaxTaxableIncome], [t0].[MinTaxableIncome], [t0].[TaxRate], [t0].[TaxTableId], [t0].[UpdatedAtUtc]
+      FROM (
+          SELECT TOP(2) [t].[Id], [t].[Code], [t].[CreatedAtUtc], [t].[EffectiveEndDate], [t].[EffectiveStartDate], [t].[IsActive], [t].[Name], [t].[PayFrequency], [t].[UpdatedAtUtc]
+          FROM [TaxTables] AS [t]
+          WHERE [t].[Code] = @__seed_Code_0
+      ) AS [t1]
+      LEFT JOIN [TaxBrackets] AS [t0] ON [t1].[Id] = [t0].[TaxTableId]
+      ORDER BY [t1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (27ms) [Parameters=[@p1='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p3='?' (DbType = Guid), @p2='?' (DbType = DateTime2), @p5='?' (DbType = Guid), @p4='?' (DbType = DateTime2), @p7='?' (DbType = Guid), @p6='?' (DbType = DateTime2), @p9='?' (DbType = Guid), @p8='?' (DbType = DateTime2), @p11='?' (DbType = Guid), @p10='?' (DbType = DateTime2), @p13='?' (DbType = Guid), @p12='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [GovernmentContributionTables] SET [UpdatedAtUtc] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+      UPDATE [GovernmentContributionTables] SET [UpdatedAtUtc] = @p2
+      OUTPUT 1
+      WHERE [Id] = @p3;
+      UPDATE [GovernmentContributionTables] SET [UpdatedAtUtc] = @p4
+      OUTPUT 1
+      WHERE [Id] = @p5;
+      UPDATE [TaxTables] SET [UpdatedAtUtc] = @p6
+      OUTPUT 1
+      WHERE [Id] = @p7;
+      UPDATE [TaxTables] SET [UpdatedAtUtc] = @p8
+      OUTPUT 1
+      WHERE [Id] = @p9;
+      UPDATE [TaxTables] SET [UpdatedAtUtc] = @p10
+      OUTPUT 1
+      WHERE [Id] = @p11;
+      UPDATE [TaxTables] SET [UpdatedAtUtc] = @p12
+      OUTPUT 1
+      WHERE [Id] = @p13;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (13ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [p1].[Id], [p1].[AllowLoan], [p1].[AllowVoluntaryContribution], [p1].[AllowWithdrawal], [p1].[ContributionFrequency], [p1].[CreatedAtUtc], [p1].[CreatedByUserId], [p1].[Description], [p1].[EffectiveDate], [p1].[EligibilityRules], [p1].[EmployeeContributionType], [p1].[EmployeeContributionValue], [p1].[EmployerContributionType], [p1].[EmployerContributionValue], [p1].[PolicyName], [p1].[Remarks], [p1].[Status], [p1].[UpdatedAtUtc], [p1].[UpdatedByUserId], [p0].[Id], [p0].[CreatedAtUtc], [p0].[PolicyId], [p0].[Remarks], [p0].[UpdatedAtUtc], [p0].[VestedPercentage], [p0].[YearsOfService]
+      FROM (
+          SELECT TOP(2) [p].[Id], [p].[AllowLoan], [p].[AllowVoluntaryContribution], [p].[AllowWithdrawal], [p].[ContributionFrequency], [p].[CreatedAtUtc], [p].[CreatedByUserId], [p].[Description], [p].[EffectiveDate], [p].[EligibilityRules], [p].[EmployeeContributionType], [p].[EmployeeContributionValue], [p].[EmployerContributionType], [p].[EmployerContributionValue], [p].[PolicyName], [p].[Remarks], [p].[Status], [p].[UpdatedAtUtc], [p].[UpdatedByUserId]
+          FROM [ProvidentFundPolicies] AS [p]
+          WHERE [p].[PolicyName] = N'Regular Employee Provident Fund'
+      ) AS [p1]
+      LEFT JOIN [ProvidentFundVestingRules] AS [p0] ON [p1].[Id] = [p0].[PolicyId]
+      ORDER BY [p1].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (20ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Boolean), @p2='?' (DbType = Boolean), @p3='?' (DbType = Boolean), @p4='?' (Size = 32), @p5='?' (DbType = DateTime2), @p6='?' (Size = 450), @p7='?' (Size = 1000), @p8='?' (DbType = Date), @p9='?' (Size = 2000), @p10='?' (Size = 32), @p11='?' (Precision = 18) (Scale = 4) (DbType = Decimal), @p12='?' (Size = 32), @p13='?' (Precision = 18) (Scale = 4) (DbType = Decimal), @p14='?' (Size = 160), @p15='?' (Size = 1000), @p16='?' (Size = 32), @p17='?' (DbType = DateTime2), @p18='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [ProvidentFundPolicies] ([Id], [AllowLoan], [AllowVoluntaryContribution], [AllowWithdrawal], [ContributionFrequency], [CreatedAtUtc], [CreatedByUserId], [Description], [EffectiveDate], [EligibilityRules], [EmployeeContributionType], [EmployeeContributionValue], [EmployerContributionType], [EmployerContributionValue], [PolicyName], [Remarks], [Status], [UpdatedAtUtc], [UpdatedByUserId])
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (34ms) [Parameters=[@p6='?' (DbType = Guid), @p0='?' (DbType = DateTime2), @p1='?' (DbType = Guid), @p2='?' (Size = 1000), @p3='?' (DbType = DateTime2), @p4='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p5='?' (DbType = Int32), @p13='?' (DbType = Guid), @p7='?' (DbType = DateTime2), @p8='?' (DbType = Guid), @p9='?' (Size = 1000), @p10='?' (DbType = DateTime2), @p11='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p12='?' (DbType = Int32), @p20='?' (DbType = Guid), @p14='?' (DbType = DateTime2), @p15='?' (DbType = Guid), @p16='?' (Size = 1000), @p17='?' (DbType = DateTime2), @p18='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p19='?' (DbType = Int32), @p27='?' (DbType = Guid), @p21='?' (DbType = DateTime2), @p22='?' (DbType = Guid), @p23='?' (Size = 1000), @p24='?' (DbType = DateTime2), @p25='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p26='?' (DbType = Int32), @p34='?' (DbType = Guid), @p28='?' (DbType = DateTime2), @p29='?' (DbType = Guid), @p30='?' (Size = 1000), @p31='?' (DbType = DateTime2), @p32='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p33='?' (DbType = Int32), @p41='?' (DbType = Guid), @p35='?' (DbType = DateTime2), @p36='?' (DbType = Guid), @p37='?' (Size = 1000), @p38='?' (DbType = DateTime2), @p39='?' (Precision = 9) (Scale = 4) (DbType = Decimal), @p40='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET NOCOUNT ON;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p0, [PolicyId] = @p1, [Remarks] = @p2, [UpdatedAtUtc] = @p3, [VestedPercentage] = @p4, [YearsOfService] = @p5
+      OUTPUT 1
+      WHERE [Id] = @p6;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p7, [PolicyId] = @p8, [Remarks] = @p9, [UpdatedAtUtc] = @p10, [VestedPercentage] = @p11, [YearsOfService] = @p12
+      OUTPUT 1
+      WHERE [Id] = @p13;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p14, [PolicyId] = @p15, [Remarks] = @p16, [UpdatedAtUtc] = @p17, [VestedPercentage] = @p18, [YearsOfService] = @p19
+      OUTPUT 1
+      WHERE [Id] = @p20;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p21, [PolicyId] = @p22, [Remarks] = @p23, [UpdatedAtUtc] = @p24, [VestedPercentage] = @p25, [YearsOfService] = @p26
+      OUTPUT 1
+      WHERE [Id] = @p27;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p28, [PolicyId] = @p29, [Remarks] = @p30, [UpdatedAtUtc] = @p31, [VestedPercentage] = @p32, [YearsOfService] = @p33
+      OUTPUT 1
+      WHERE [Id] = @p34;
+      UPDATE [ProvidentFundVestingRules] SET [CreatedAtUtc] = @p35, [PolicyId] = @p36, [Remarks] = @p37, [UpdatedAtUtc] = @p38, [VestedPercentage] = @p39, [YearsOfService] = @p40
+      OUTPUT 1
+      WHERE [Id] = @p41;
