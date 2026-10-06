@@ -1,24 +1,13 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useMemo, useState, type ReactElement, type SVGProps } from 'react'
+import { useEffect, useMemo, useState, type SVGProps } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { sixramApi } from '../api/sixramApi'
+import { buildNavigationTree, type NavigationGroup } from '../app/navigation'
 import { useAuth } from '../auth/AuthContext'
 import type { NotificationSummary, UserNotification } from '../types/models'
 import { formatDateTime } from '../utils/date'
 
 type IconProps = SVGProps<SVGSVGElement>
-
-type NavigationItem = {
-  to: string
-  label: string
-}
-
-type NavigationGroup = {
-  key: string
-  label: string
-  icon: (props: IconProps) => ReactElement
-  items: NavigationItem[]
-}
 
 type PageMeta = {
   section: string
@@ -29,63 +18,6 @@ type PageMeta = {
 type Breadcrumb = {
   label: string
   to?: string
-}
-
-function DashboardIcon(props: IconProps) {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" {...props}>
-      <path
-        d="M4.75 5.75C4.75 5.198 5.198 4.75 5.75 4.75H10.25C10.802 4.75 11.25 5.198 11.25 5.75V10.25C11.25 10.802 10.802 11.25 10.25 11.25H5.75C5.198 11.25 4.75 10.802 4.75 10.25V5.75ZM12.75 5.75C12.75 5.198 13.198 4.75 13.75 4.75H18.25C18.802 4.75 19.25 5.198 19.25 5.75V8.25C19.25 8.802 18.802 9.25 18.25 9.25H13.75C13.198 9.25 12.75 8.802 12.75 8.25V5.75ZM4.75 13.75C4.75 13.198 5.198 12.75 5.75 12.75H8.25C8.802 12.75 9.25 13.198 9.25 13.75V18.25C9.25 18.802 8.802 19.25 8.25 19.25H5.75C5.198 19.25 4.75 18.802 4.75 18.25V13.75ZM12.75 11.75C12.75 11.198 13.198 10.75 13.75 10.75H18.25C18.802 10.75 19.25 11.198 19.25 11.75V18.25C19.25 18.802 18.802 19.25 18.25 19.25H13.75C13.198 19.25 12.75 18.802 12.75 18.25V11.75Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function PeopleIcon(props: IconProps) {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" {...props}>
-      <path
-        d="M8.75 10.25C10.1307 10.25 11.25 9.13071 11.25 7.75C11.25 6.36929 10.1307 5.25 8.75 5.25C7.36929 5.25 6.25 6.36929 6.25 7.75C6.25 9.13071 7.36929 10.25 8.75 10.25ZM15.75 11.75C17.1307 11.75 18.25 10.6307 18.25 9.25C18.25 7.86929 17.1307 6.75 15.75 6.75C14.3693 6.75 13.25 7.86929 13.25 9.25C13.25 10.6307 14.3693 11.75 15.75 11.75ZM4.75 18.25C4.75 15.9028 6.65279 14 9 14H10.5C12.8472 14 14.75 15.9028 14.75 18.25M13.75 18.25C13.75 16.5931 15.0931 15.25 16.75 15.25H17.25C18.9069 15.25 20.25 16.5931 20.25 18.25"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function ShieldIcon(props: IconProps) {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" {...props}>
-      <path
-        d="M12 4.75L18.25 7.25V11.75C18.25 15.7561 15.4144 19.203 12 20.25C8.58563 19.203 5.75 15.7561 5.75 11.75V7.25L12 4.75ZM9.75 12.25L11.25 13.75L14.75 10.25"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
-function WalletIcon(props: IconProps) {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" {...props}>
-      <path
-        d="M5.75 7.75H18.25C18.8023 7.75 19.25 8.19772 19.25 8.75V16.25C19.25 16.8023 18.8023 17.25 18.25 17.25H5.75C5.19772 17.25 4.75 16.8023 4.75 16.25V8.75C4.75 8.19772 5.19772 7.75 5.75 7.75ZM4.75 9.75H14.25C14.8023 9.75 15.25 10.1977 15.25 10.75V13.25C15.25 13.8023 14.8023 14.25 14.25 14.25H4.75M16.75 12H16.76"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-      <path d="M6.75 7.75V6.75C6.75 5.92157 7.42157 5.25 8.25 5.25H17.25" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-    </svg>
-  )
 }
 
 function BellIcon(props: IconProps) {
@@ -592,152 +524,10 @@ export function AppLayout() {
   const [notificationSummary, setNotificationSummary] = useState<NotificationSummary | null>(null)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => getDefaultExpanded(location.pathname))
 
-  const canAccessApprovalCenter =
-    isAdmin ||
-    isManager ||
-    (user?.roles.includes('HR') ?? false) ||
-    (user?.roles.includes('PayrollOfficer') ?? false)
-
-  const isHumanResources = user?.roles.includes('HR') ?? false
-  const isPayrollOfficer = user?.roles.includes('PayrollOfficer') ?? false
-  const canAccessReports = isAdmin || isManager || isHumanResources || isPayrollOfficer
-  const canAccessCompliance = isAdmin || isManager || isHumanResources
-  const canAccessAuditLogs = isAdmin || isHumanResources || isPayrollOfficer
-  const canAccessProvidentFund = isAdmin || isHumanResources || isPayrollOfficer
-
-  const navigationTree = useMemo<NavigationGroup[]>(() => {
-    const groups: NavigationGroup[] = [
-      {
-        key: 'home',
-        label: 'Workspace',
-        icon: DashboardIcon,
-        items: [
-          { to: '/', label: 'Home' },
-          { to: '/notifications', label: 'Notifications' },
-        ],
-      },
-    ]
-
-    if (canAccessReports || canAccessCompliance || canAccessAuditLogs) {
-      groups.push({
-        key: 'insights',
-        label: 'Insights',
-        icon: DashboardIcon,
-        items: [
-          ...(canAccessReports ? [{ to: '/analytics', label: 'Analytics Dashboard' }, { to: '/reports', label: 'Reports Center' }] : []),
-          ...(canAccessCompliance ? [{ to: '/compliance', label: 'Compliance Center' }] : []),
-          ...(canAccessAuditLogs ? [{ to: '/audit-logs', label: 'Audit Trail' }] : []),
-        ],
-      })
-    }
-
-    if (hasLinkedEmployee) {
-      groups.push({
-        key: 'employee',
-        label: 'Employee Portal',
-        icon: PeopleIcon,
-        items: [
-          { to: '/me/dashboard', label: 'My Dashboard' },
-          { to: '/me/profile', label: 'My Profile' },
-          { to: '/me/attendance', label: 'My Attendance' },
-          { to: '/me/leave', label: 'My Leave' },
-          { to: '/me/documents', label: 'My Documents' },
-          { to: '/me/payslips', label: 'My Payslips' },
-          { to: '/me/provident-fund', label: 'My Provident Fund' },
-          { to: '/me/requests', label: 'My Requests' },
-        ],
-      })
-    }
-
-    if (isManager) {
-      groups.push({
-        key: 'manager',
-        label: 'Manager Portal',
-        icon: PeopleIcon,
-        items: [
-          { to: '/manager', label: 'Team Dashboard' },
-          { to: '/manager/team', label: 'My Team' },
-          { to: '/manager/attendance', label: 'Team Attendance' },
-          { to: '/manager/leave', label: 'Team Leave' },
-        ],
-      })
-    }
-
-    if (canAccessApprovalCenter) {
-      groups.push({
-        key: 'approvals',
-        label: 'Approvals',
-        icon: ShieldIcon,
-        items: [{ to: '/approvals', label: 'Approval Center' }],
-      })
-    }
-
-    if (canAccessProvidentFund) {
-      groups.push({
-        key: 'providentFund',
-        label: 'Provident Fund',
-        icon: WalletIcon,
-        items: [
-          { to: '/admin/provident-fund', label: 'Dashboard' },
-          { to: '/admin/provident-fund/policies', label: 'Fund Policies' },
-          { to: '/admin/provident-fund/vesting', label: 'Vesting Rules' },
-          { to: '/admin/provident-fund/enrollments', label: 'Employee Enrollment' },
-          { to: '/admin/provident-fund/contributions', label: 'Monthly Contributions' },
-          { to: '/admin/provident-fund/ledger', label: 'Fund Ledger' },
-          { to: '/admin/provident-fund/withdrawals', label: 'Withdrawals' },
-          { to: '/admin/provident-fund/adjustments', label: 'Adjustments' },
-          { to: '/admin/provident-fund/reports', label: 'Reports' },
-        ],
-      })
-    }
-
-    if (isAdmin) {
-      groups.push(
-        {
-          key: 'workforce',
-          label: 'HR Operations',
-          icon: ShieldIcon,
-          items: [
-            { to: '/admin/employees', label: 'Employees' },
-            { to: '/admin/attendance', label: 'Attendance' },
-            { to: '/admin/attendance/work-schedules', label: 'Work Schedules' },
-            { to: '/admin/attendance/shifts', label: 'Shifts' },
-            { to: '/admin/attendance/assignments', label: 'Schedule Assignments' },
-            { to: '/admin/leave', label: 'Leave Management' },
-            { to: '/admin/leave/calendar', label: 'Leave Calendar' },
-            { to: '/admin/leave/types', label: 'Leave Types' },
-            { to: '/admin/documents', label: 'Employee Documents' },
-            { to: '/admin/document-types', label: 'Document Types' },
-            { to: '/admin/organization', label: 'Organization Setup' },
-            { to: '/admin/production-readiness', label: 'Production Readiness' },
-          ],
-        },
-        {
-          key: 'payroll',
-          label: 'Payroll',
-          icon: WalletIcon,
-          items: [
-            { to: '/admin/payroll', label: 'Payroll Dashboard' },
-            { to: '/admin/payroll/compensation', label: 'Compensation' },
-            { to: '/admin/payroll/setup', label: 'Payroll Setup' },
-            { to: '/admin/payroll/reports', label: 'Payroll Reports' },
-          ],
-        },
-        {
-          key: 'security',
-          label: 'Security',
-          icon: ShieldIcon,
-          items: [
-            { to: '/admin/users', label: 'User Accounts' },
-            { to: '/admin/roles', label: 'Roles' },
-            { to: '/admin/rbac', label: 'RBAC Management' },
-          ],
-        },
-      )
-    }
-
-    return groups
-  }, [canAccessApprovalCenter, canAccessAuditLogs, canAccessCompliance, canAccessProvidentFund, canAccessReports, hasLinkedEmployee, isAdmin, isManager])
+  const navigationTree = useMemo<NavigationGroup[]>(
+    () => buildNavigationTree({ hasLinkedEmployee, isAdmin, isManager, roles: user?.roles }),
+    [hasLinkedEmployee, isAdmin, isManager, user?.roles],
+  )
 
   const page = resolvePageMeta(location.pathname, isAdmin, hasLinkedEmployee, isManager)
   const breadcrumbs = buildBreadcrumbs(location.pathname, page, isAdmin, hasLinkedEmployee, isManager)

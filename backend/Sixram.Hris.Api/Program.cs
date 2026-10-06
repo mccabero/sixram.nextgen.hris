@@ -11,7 +11,6 @@ using Sixram.Api.Data;
 using Sixram.Api.DTOs;
 using Sixram.Api.Entities;
 using Sixram.Api.Middleware;
-using Sixram.Api.Repositories;
 using Sixram.Api.Services;
 
 const string defaultConnectionString = "Server=localhost\\SQLEXPRESS;Database=SixramDB;Trusted_Connection=True;TrustServerCertificate=True;";
@@ -261,40 +260,7 @@ builder.Services.AddSwaggerGen(options =>
     options.AddSecurityDefinition("Bearer", securityScheme);
 });
 
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-builder.Services.AddScoped<IRbacReadRepository, RbacReadRepository>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAdminUserService, AdminUserService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<IRbacService, RbacService>();
-builder.Services.AddScoped<IOrganizationSetupService, OrganizationSetupService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IDocumentTypeService, DocumentTypeService>();
-builder.Services.AddScoped<IEmployeeDocumentStorageService, EmployeeDocumentStorageService>();
-builder.Services.AddScoped<IEmployeeDocumentService, EmployeeDocumentService>();
-builder.Services.AddScoped<IUserAccessService, UserAccessService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-builder.Services.AddScoped<IAttendanceCalculationService, AttendanceCalculationService>();
-builder.Services.AddScoped<IAttendanceSetupService, AttendanceSetupService>();
-builder.Services.AddScoped<IAttendanceService, AttendanceService>();
-builder.Services.AddScoped<IAttendanceAdjustmentService, AttendanceAdjustmentService>();
-builder.Services.AddScoped<ILeaveAttachmentStorageService, LeaveAttachmentStorageService>();
-builder.Services.AddScoped<ILeaveTypeService, LeaveTypeService>();
-builder.Services.AddScoped<ILeaveService, LeaveService>();
-builder.Services.AddScoped<IProfileChangeRequestService, ProfileChangeRequestService>();
-builder.Services.AddScoped<IPortalService, PortalService>();
-builder.Services.AddScoped<IApprovalCenterService, ApprovalCenterService>();
-builder.Services.AddScoped<IComplianceService, ComplianceService>();
-builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
-builder.Services.AddScoped<IReportsService, ReportsService>();
-builder.Services.AddScoped<IProductionReadinessService, ProductionReadinessService>();
-builder.Services.AddScoped<IPayrollSetupService, PayrollSetupService>();
-builder.Services.AddScoped<IPayrollCompensationService, PayrollCompensationService>();
-builder.Services.AddScoped<IPayrollService, PayrollService>();
-builder.Services.AddScoped<IProvidentFundService, ProvidentFundService>();
-builder.Services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
+builder.Services.AddSixramApplicationServices();
 
 var app = builder.Build();
 

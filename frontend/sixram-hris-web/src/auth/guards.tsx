@@ -1,4 +1,11 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import {
+  canAccessApprovalCenter,
+  canAccessAuditLogs,
+  canAccessCompliance,
+  canAccessProvidentFund,
+  canAccessReports,
+} from '../app/access'
 import { LoadingScreen } from '../components/LoadingScreen'
 import { useAuth } from './AuthContext'
 
@@ -66,11 +73,7 @@ export function RequireApprovalAccess() {
     return <LoadingScreen label="Checking your approval access..." />
   }
 
-  const canAccess =
-    isAdmin ||
-    isManager ||
-    (user?.roles.includes('HR') ?? false) ||
-    (user?.roles.includes('PayrollOfficer') ?? false)
+  const canAccess = canAccessApprovalCenter({ hasLinkedEmployee: false, isAdmin, isManager, roles: user?.roles })
 
   if (!canAccess) {
     return <Navigate to="/" replace />
@@ -86,11 +89,7 @@ export function RequireReportsAccess() {
     return <LoadingScreen label="Checking your reporting access..." />
   }
 
-  const canAccess =
-    isAdmin ||
-    isManager ||
-    (user?.roles.includes('HR') ?? false) ||
-    (user?.roles.includes('PayrollOfficer') ?? false)
+  const canAccess = canAccessReports({ hasLinkedEmployee: false, isAdmin, isManager, roles: user?.roles })
 
   if (!canAccess) {
     return <Navigate to="/" replace />
@@ -106,7 +105,7 @@ export function RequireComplianceAccess() {
     return <LoadingScreen label="Checking your compliance access..." />
   }
 
-  const canAccess = isAdmin || isManager || (user?.roles.includes('HR') ?? false)
+  const canAccess = canAccessCompliance({ hasLinkedEmployee: false, isAdmin, isManager, roles: user?.roles })
 
   if (!canAccess) {
     return <Navigate to="/" replace />
@@ -122,7 +121,7 @@ export function RequireAuditLogAccess() {
     return <LoadingScreen label="Checking your audit access..." />
   }
 
-  const canAccess = isAdmin || (user?.roles.includes('HR') ?? false) || (user?.roles.includes('PayrollOfficer') ?? false)
+  const canAccess = canAccessAuditLogs({ hasLinkedEmployee: false, isAdmin, isManager: false, roles: user?.roles })
 
   if (!canAccess) {
     return <Navigate to="/" replace />
@@ -138,7 +137,7 @@ export function RequireProvidentFundAccess() {
     return <LoadingScreen label="Checking your provident fund access..." />
   }
 
-  const canAccess = isAdmin || (user?.roles.includes('HR') ?? false) || (user?.roles.includes('PayrollOfficer') ?? false)
+  const canAccess = canAccessProvidentFund({ hasLinkedEmployee: false, isAdmin, isManager: false, roles: user?.roles })
 
   if (!canAccess) {
     return <Navigate to="/" replace />
